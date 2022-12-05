@@ -1,4 +1,4 @@
-% Create a kilosort channel map using on Plexon header data.
+% Create a kilosort channel map using Plexon header data.
 %
 % This code is based on some Kilosort code:
 %    - An example channel map: configFiles/createChannelMapFile.m
@@ -16,7 +16,7 @@
 %
 % chanMap -- struct that should work as a kilosort channel map
 %
-function chanMap = createPlexonChannelMap(plxFile, x, y, k)
+function chanMap = chanMapForPlxFile(plxFile, x, y, k)
 
 arguments
     plxFile = '';
