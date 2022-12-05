@@ -36,7 +36,6 @@ end
     header.slowAdBits, ...
     header.duration, ...
     header.dateTime] = plx_information(fileName);
-disp(header);
 
 if ~isfinite(duration)
     duration = header.duration;
@@ -50,6 +49,8 @@ fullread = 1;
     counts.evcounts, ...
     counts.contcounts] = plx_info(header.file, fullread);
 
+disp('Timestamps and waveforms:')
+
 % Timestamps.
 % tscounts(i, j) is the number of timestamps for channel j-1, unit i
 [tsi, tsj] = find(counts.tscounts);
@@ -57,7 +58,7 @@ spikesCount = numel(tsi);
 for ii = 1:spikesCount
     channelId = tsj(ii) - 1;
     unitId = tsi(ii) - 1;
-    fprintf('%d timestamps for spike channel %d, unit %d\n', ...
+    fprintf('  %d timestamps for spike channel %d, unit %d\n', ...
         counts.tscounts(tsi(ii), tsj(ii)), channelId, unitId);
 end
 
@@ -67,27 +68,35 @@ end
 for ii = 1:numel(wfi)
     channelId = tsj(ii) - 1;
     unitId = tsi(ii) - 1;
-    fprintf('%d waveforms for spike channel %d, unit %d\n', ...
+    fprintf('  %d waveforms for spike channel %d, unit %d\n', ...
         counts.wfcounts(wfi(ii), wfj(ii)), channelId, unitId);
 end
 
+disp('Digital events:')
+
 % Events.
 % evcounts(i) is the number of events for event channel i
+[~, eventChannels] = plx_event_chanmap(header.file);
+[~, eventNames] = plx_event_names(header.file);
 evi = find(counts.evcounts);
 eventsCount = numel(evi);
 for ii = 1:eventsCount
-    fprintf('%d events for event channel %d\n', ...
-        counts.evcounts(evi(ii)), evi(ii));
+    eventId = eventChannels(evi(ii));
+    fprintf('  %d events for event channel %d -- %s\n', ...
+        counts.evcounts(evi(ii)), eventId, strip(eventNames(evi(ii), :)));
 end
+
+disp('AD channels:')
 
 % Continuous AKA slow sample counts.
 % contcounts(i) is the number of continuous for slow channel i-1
+[~, adNames] = plx_adchan_names(header.file);
 adi = find(counts.contcounts);
 adCount = numel(adi);
 for ii = 1:adCount
     channelId = adi(ii) - 1;
-    fprintf('%d samples for continuous / slow channel %d\n', ...
-        counts.contcounts(adi(ii)), channelId);
+    fprintf('  %d samples for continuous / slow channel %d -- %s\n', ...
+        counts.contcounts(adi(ii)), channelId, strip(adNames(adi(ii), :)));
 end
 
 if isnan(startTime)
@@ -100,7 +109,6 @@ clf();
 
 xRange = [startTime, min(startTime + duration, header.duration)];
 
-[~, adNames] = plx_adchan_names(header.file);
 for ii = 1:adCount
     channelId = adi(ii) - 1;
 
@@ -194,8 +202,6 @@ xlabel('window time (s)');
 figure(firstFig + 3);
 clf();
 
-[~, eventChannels] = plx_event_chanmap(header.file);
-[~, eventNames] = plx_event_names(header.file);
 for ii = 1:eventsCount
     %   n - number of timestamps
     %   ts - array of timestamps (in seconds)
