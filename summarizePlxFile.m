@@ -2,7 +2,7 @@
 %
 % Inputs:
 %
-% fileName -- name of the .plx file to load, default is prompt with dialog
+% plxFile -- name of the .plx file to load, default is prompt with dialog
 % startTime -- starting location of data to plot, default is 0 seconds,
 %              use nan to skip plotting
 % duration -- how much data to plot aftart startTime, default is 30
@@ -13,10 +13,10 @@
 % header -- struct with header info from the chosen .plx file
 % counts -- struct with data counts from the .plx file
 %
-function [header, counts] = summarizePlxFile(fileName, startTime, duration, firstFig)
+function [header, counts] = summarizePlxFile(plxFile, startTime, duration, firstFig)
 
 arguments
-    fileName = '';
+    plxFile = '';
     startTime = 0;
     duration = 30;
     firstFig = 1;
@@ -35,7 +35,7 @@ end
     header.slowPeakV, ...
     header.slowAdBits, ...
     header.duration, ...
-    header.dateTime] = plx_information(fileName);
+    header.dateTime] = plx_information(plxFile);
 
 if ~isfinite(duration)
     duration = header.duration;
@@ -66,8 +66,8 @@ end
 % wfcounts(i, j) is the number of waveforms for channel j-1, unit i
 [wfi, wfj] = find(counts.wfcounts);
 for ii = 1:numel(wfi)
-    channelId = tsj(ii) - 1;
-    unitId = tsi(ii) - 1;
+    channelId = wfj(ii) - 1;
+    unitId = wfi(ii) - 1;
     fprintf('  %d waveforms for spike channel %d, unit %d\n', ...
         counts.wfcounts(wfi(ii), wfj(ii)), channelId, unitId);
 end
