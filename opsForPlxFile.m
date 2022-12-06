@@ -1,29 +1,43 @@
-% Create a kilosort options struct using Plexon header data.
+% Create a kilosort options struct for sorting Plexon data.
+%
+% The basic flow would be:
+% - choose a .plx file
+% - create a chanMap for it, using chanMapForPlxFile()
+% - create an ops struct for it, using this util
+% - create a .bin file for it, using binFileForPlxFile()
+% - run kilosort using the ops
 %
 % This code is based on some Kilosort code:
+% See https://github.com/MouseLand/Kilosort/tree/main
 %    - Example ops: https://github.com/MouseLand/Kilosort/blob/main/configFiles/StandardConfig_MOVEME.m
 %    - Example ops: https://github.com/MouseLand/Kilosort/blob/main/configFiles/configFile384.m
-% See https://github.com/MouseLand/Kilosort/tree/main
 %
 % Inputs:
 %
-% plxFile -- name of the .plx file to use, default is prompt with dialog
+% plxFile -- name of the .plx file to be sorted
 % chanMap -- kilosort channel map struct, as from chanMapForPlxFile()
-% existingOps -- struct of existing ops to override what's chosen here
+% tRange -- time range to sort, defaults to all: [0, inf]
+% binDir -- dir where binFileForPlxFile() should creat the .bin file
+% tempDir -- dir for kilosort to use for working computation (fast ssd)
 %
 % Outputs:
 %
 % ops -- struct that should work as a kilosort options struct
 %
-function ops = opsForPlxFile(plxFile, chanMap, existingOps)
+function ops = opsForPlxFile(plxFile, chanMap, tRange, binDir, tempDir)
 
 arguments
-    plxFile = '';
-    chanMap = chanMapForPlxFile(plxFile);
-    existingOps = struct();
+    plxFile { mustBeFile }
+    chanMap { mustBeNonempty }
+    tRange = [0, inf];
+    binDir = pwd();
+    tempDir = tempdir();
 end
 
 %% Start with many defaults from kilosort.
+% See also:
+% - https://github.com/MouseLand/Kilosort/blob/main/configFiles/StandardConfig_MOVEME.m
+% - https://github.com/MouseLand/Kilosort/blob/main/configFiles/configFile384.m
 
 % frequency for high pass filtering (150)
 ops.fshigh = 150;
@@ -71,8 +85,12 @@ ops.nPCs = 3; % how many PCs to project the spikes into
 ops.useRAM = 0; % not yet available
 
 
-%% Add what we know from Plexon.
+%% Add what we know about the chosen .plx file.
 ops.chanMap = chanMap;
+
+% Assume binFileForPlxFile() will only write out the "connected" channels.
+% Seems obvious here, but in general .bin files can contain extra data.
+ops.NchanTOT = sum(chanMap.connected);
 
 [header.file, ...
     header.version, ...
@@ -91,10 +109,8 @@ ops.chanMap = chanMap;
 % Plexon spike waveform sample rate (not the AD "slow" rate).
 ops.fs = header.frequency;
 
+ops.trange = tRange;
+ops.fproc = fullfile(tempDir, 'temp_wh2.dat');
 
-%% Add addtional overrides from the caller.
-names = fieldnames(existingOps);
-for ii = 1:numel(names)
-    name = names{ii};
-    ops.(name) = existingOps.(name);
-end
+[~, plxName, plxExt] = fileparts(header.file);
+ops.fbinary = fullfile(binDir, [plxName plxExt '.bin']);

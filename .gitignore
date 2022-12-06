@@ -31,4 +31,4 @@ codegen/
 octave-workspace
 
 scratch.m
-
+*.bin
