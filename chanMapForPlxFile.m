@@ -16,9 +16,8 @@
 % Outputs:
 %
 % chanMap -- struct that should work as a kilosort channel map
-% plxFile -- .plx file that was used (passed in or chosen from dialog)
 %
-function [chanMap, plxFile] = chanMapForPlxFile(plxFile, chanX, chanY, chanK, chanIgnore)
+function chanMap = chanMapForPlxFile(plxFile, chanX, chanY, chanK, chanIgnore)
 
 arguments
     plxFile { mustBeFile }
@@ -47,7 +46,7 @@ fullread = 1;
 nChans = size(counts.wfcounts, 2) - 1;
 [~, connectedChanInds] = find(counts.wfcounts);
 
-% Create the chanMap struct using fieldnames expected by kilosort.
+% This chanMap struct uses fieldnames expected by kilosort.
 chanMap.Nchannels = nChans;
 chanMap.chanMap = 1:nChans;
 
