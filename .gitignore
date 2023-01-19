@@ -30,5 +30,8 @@ codegen/
 # Octave session info
 octave-workspace
 
+# Matlab license
+*.lic
+
 scratch.m
 *.bin

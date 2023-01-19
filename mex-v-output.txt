@@ -1,0 +1,83 @@
+Licensing MATLAB using license file /licenses/license.lic.
+Running matlab -batch  "cd /home/matlab/Matlab-Offline-Files-SDK/mexPlex; mex -v -output mexPlex -outdir /home/matlab/Matlab-Offline-Files-SDK PlexMethods.cpp"
+Verbose mode is on.
+No MEX options file identified; looking for an implicit selection.
+... Looking for compiler 'g++' ...
+... Executing command 'which g++' ...Yes ('/usr/bin/g++').
+... Executing command 'g++ -print-file-name=libstdc++.so' ...Yes ('/usr/lib/gcc/x86_64-linux-gnu/9/libstdc++.so').
+... Executing command 'g++ -dumpversion' ...Yes ('9').
+... Executing command 'which g++' ...Yes ('/usr/bin/g++').
+... Looking for folder '/usr' ...Yes.
+... Executing command 'g++ -dumpmachine' ...Yes ('x86_64-linux-gnu').
+Found installed compiler 'g++'.
+Set INCLUDE = /usr/lib/gcc/x86_64-linux-gnu/9/include;/usr/include/c++/9;/usr/include/c++/9/x86_64-linux-gnu;/usr/include/c++/9/backward;
+Options file details
+-------------------------------------------------------------------
+        Compiler location: /usr/bin/g++
+        Options file: /opt/matlab/R2022b/bin/glnxa64/mexopts/g++_glnxa64.xml
+        CMDLINE2 : /usr/bin/g++ -pthread -Wl,--no-undefined  -shared -O -Wl,--version-script,"/opt/matlab/R2022b/extern/lib/glnxa64/c_exportsmexfileversion.map" /tmp/mex_15474392659988_1/PlexMethods.o /tmp/mex_15474392659988_1/cpp_mexapi_version.o   -lstdc++ -Wl,--as-needed -Wl,-rpath-link,/opt/matlab/R2022b/bin/glnxa64 -L"/opt/matlab/R2022b/bin/glnxa64" -Wl,-rpath-link,/opt/matlab/R2022b/extern/bin/glnxa64 -L"/opt/matlab/R2022b/extern/bin/glnxa64" -lMatlabDataArray -lmx -lmex -lm -lmat -o /home/matlab/Matlab-Offline-Files-SDK/mexPlex.mexa64
+        CXX : /usr/bin/g++
+        DEFINES : -DMATLAB_DEFAULT_RELEASE=R2017b  -DUSE_MEX_CMD   -D_GNU_SOURCE -DMATLAB_MEX_FILE 
+        MATLABMEX : -DMATLAB_MEX_FILE 
+        CFLAGS : -fexceptions -fPIC -fno-omit-frame-pointer -pthread
+        CXXFLAGS : -fexceptions -fPIC -fno-omit-frame-pointer -pthread -std=c++11
+        INCLUDE : -I"/opt/matlab/R2022b/extern/include" -I"/opt/matlab/R2022b/simulink/include"
+        CXXOPTIMFLAGS : -O2 -fwrapv -DNDEBUG
+        CXXDEBUGFLAGS : -g
+        LDXX : /usr/bin/g++
+        LDFLAGS : -pthread -Wl,--no-undefined 
+        LDTYPE : -shared
+        LINKEXPORT : -Wl,--version-script,"/opt/matlab/R2022b/extern/lib/glnxa64/mexFunction.map"
+        LINKEXPORTVER : -Wl,--version-script,"/opt/matlab/R2022b/extern/lib/glnxa64/c_exportsmexfileversion.map"
+        LINKLIBS : -lstdc++ -Wl,--as-needed -Wl,-rpath-link,/opt/matlab/R2022b/bin/glnxa64 -L"/opt/matlab/R2022b/bin/glnxa64" -Wl,-rpath-link,/opt/matlab/R2022b/extern/bin/glnxa64 -L"/opt/matlab/R2022b/extern/bin/glnxa64" -lMatlabDataArray -lmx -lmex -lm -lmat
+        LDOPTIMFLAGS : -O
+        LDDEBUGFLAGS : -g
+        MWCPPLIB : "/opt/matlab/R2022b/sys/os/glnxa64/orig/libstdc++.so.6"
+        OBJEXT : .o
+        LDEXT : .mexa64
+        SETENV : CC="gcc"
+                CXX="/usr/bin/g++"
+                CFLAGS="-fexceptions -fPIC -fno-omit-frame-pointer -pthread -DMATLAB_DEFAULT_RELEASE=R2017b  -DUSE_MEX_CMD   -D_GNU_SOURCE -DMATLAB_MEX_FILE "
+                CXXFLAGS="-fexceptions -fPIC -fno-omit-frame-pointer -pthread -std=c++11 -DMATLAB_DEFAULT_RELEASE=R2017b  -DUSE_MEX_CMD   -D_GNU_SOURCE -DMATLAB_MEX_FILE "
+                COPTIMFLAGS="-O2 -fwrapv -DNDEBUG"
+                CXXOPTIMFLAGS="-O2 -fwrapv -DNDEBUG"
+                CDEBUGFLAGS="-g"
+                CXXDEBUGFLAGS="-g"
+                MW_GLIBC_SHIM="$MW_GLIBC_SHIM"
+                LD="gcc"
+                LDXX="/usr/bin/g++"
+                LDFLAGS="-pthread -Wl,--no-undefined  -shared -lstdc++ -Wl,--as-needed -Wl,-rpath-link,/opt/matlab/R2022b/bin/glnxa64 -L"/opt/matlab/R2022b/bin/glnxa64" -Wl,-rpath-link,/opt/matlab/R2022b/extern/bin/glnxa64 -L"/opt/matlab/R2022b/extern/bin/glnxa64" -lMatlabDataArray -lmx -lmex -lm -lmat -Wl,--version-script,"/opt/matlab/R2022b/extern/lib/glnxa64/mexFunction.map""
+                LDDEBUGFLAGS="-g"
+        GCC : /usr/bin/g++
+        CPPLIB_DIR : /usr/lib/gcc/x86_64-linux-gnu/9/libstdc++.so
+        VER : 9
+        GCCDIR : /usr
+        GCC_TARGET : x86_64-linux-gnu
+        MATLABROOT : /opt/matlab/R2022b
+        ARCH : glnxa64
+        SRC : "/home/matlab/Matlab-Offline-Files-SDK/mexPlex/PlexMethods.cpp";"/opt/matlab/R2022b/extern/version/cpp_mexapi_version.cpp"
+        OBJ : /tmp/mex_15474392659988_1/PlexMethods.o;/tmp/mex_15474392659988_1/cpp_mexapi_version.o
+        OBJS : /tmp/mex_15474392659988_1/PlexMethods.o /tmp/mex_15474392659988_1/cpp_mexapi_version.o 
+        SRCROOT : /home/matlab/Matlab-Offline-Files-SDK/mexPlex/PlexMethods
+        DEF : /tmp/mex_15474392659988_1/mexPlex.def
+        EXP : "/home/matlab/Matlab-Offline-Files-SDK/mexPlex.exp"
+        LIB : "/home/matlab/Matlab-Offline-Files-SDK/mexPlex.lib"
+        EXE : /home/matlab/Matlab-Offline-Files-SDK/mexPlex.mexa64
+        ILK : "/home/matlab/Matlab-Offline-Files-SDK/mexPlex.ilk"
+        MANIFEST : "/home/matlab/Matlab-Offline-Files-SDK/mexPlex.mexa64.manifest"
+        TEMPNAME : /home/matlab/Matlab-Offline-Files-SDK/mexPlex
+        EXEDIR : /home/matlab/Matlab-Offline-Files-SDK/
+        EXENAME : mexPlex
+        OPTIM : -O2 -fwrapv -DNDEBUG
+        LINKOPTIM : -O
+        CMDLINE1_0 : /usr/bin/g++ -c -DMATLAB_DEFAULT_RELEASE=R2017b  -DUSE_MEX_CMD   -D_GNU_SOURCE -DMATLAB_MEX_FILE  -I"/opt/matlab/R2022b/extern/include" -I"/opt/matlab/R2022b/simulink/include" -fexceptions -fPIC -fno-omit-frame-pointer -pthread -std=c++11 -O2 -fwrapv -DNDEBUG "/home/matlab/Matlab-Offline-Files-SDK/mexPlex/PlexMethods.cpp" -o /tmp/mex_15474392659988_1/PlexMethods.o
+        CMDLINE1_1 : /usr/bin/g++ -c -DMATLAB_DEFAULT_RELEASE=R2017b  -DUSE_MEX_CMD   -D_GNU_SOURCE -DMATLAB_MEX_FILE  -I"/opt/matlab/R2022b/extern/include" -I"/opt/matlab/R2022b/simulink/include" -fexceptions -fPIC -fno-omit-frame-pointer -pthread -std=c++11 -O2 -fwrapv -DNDEBUG "/opt/matlab/R2022b/extern/version/cpp_mexapi_version.cpp" -o /tmp/mex_15474392659988_1/cpp_mexapi_version.o
+-------------------------------------------------------------------
+Building with 'g++'.
+/usr/bin/g++ -c -DMATLAB_DEFAULT_RELEASE=R2017b  -DUSE_MEX_CMD   -D_GNU_SOURCE -DMATLAB_MEX_FILE  -I"/opt/matlab/R2022b/extern/include" -I"/opt/matlab/R2022b/simulink/include" -fexceptions -fPIC -fno-omit-frame-pointer -pthread -std=c++11 -O2 -fwrapv -DNDEBUG "/home/matlab/Matlab-Offline-Files-SDK/mexPlex/PlexMethods.cpp" -o /tmp/mex_15474392659988_1/PlexMethods.o
+/usr/bin/g++ -c -DMATLAB_DEFAULT_RELEASE=R2017b  -DUSE_MEX_CMD   -D_GNU_SOURCE -DMATLAB_MEX_FILE  -I"/opt/matlab/R2022b/extern/include" -I"/opt/matlab/R2022b/simulink/include" -fexceptions -fPIC -fno-omit-frame-pointer -pthread -std=c++11 -O2 -fwrapv -DNDEBUG "/opt/matlab/R2022b/extern/version/cpp_mexapi_version.cpp" -o /tmp/mex_15474392659988_1/cpp_mexapi_version.o
+/usr/bin/g++ -pthread -Wl,--no-undefined  -shared -O -Wl,--version-script,"/opt/matlab/R2022b/extern/lib/glnxa64/c_exportsmexfileversion.map" /tmp/mex_15474392659988_1/PlexMethods.o /tmp/mex_15474392659988_1/cpp_mexapi_version.o   -lstdc++ -Wl,--as-needed -Wl,-rpath-link,/opt/matlab/R2022b/bin/glnxa64 -L"/opt/matlab/R2022b/bin/glnxa64" -Wl,-rpath-link,/opt/matlab/R2022b/extern/bin/glnxa64 -L"/opt/matlab/R2022b/extern/bin/glnxa64" -lMatlabDataArray -lmx -lmex -lm -lmat -o /home/matlab/Matlab-Offline-Files-SDK/mexPlex.mexa64
+Recompile embedded version with '-DMATLAB_MEXCMD_RELEASE=R2017b'
+/usr/bin/g++ -c -DMATLAB_DEFAULT_RELEASE=R2017b  -DUSE_MEX_CMD   -D_GNU_SOURCE -DMATLAB_MEX_FILE  -I"/opt/matlab/R2022b/extern/include" -I"/opt/matlab/R2022b/simulink/include" -fexceptions -fPIC -fno-omit-frame-pointer -pthread -std=c++11 -O2 -fwrapv -DNDEBUG "/opt/matlab/R2022b/extern/version/cpp_mexapi_version.cpp" -o /tmp/mex_15474392659988_1/cpp_mexapi_version.o -DMATLAB_MEXCMD_RELEASE=R2017b
+/usr/bin/g++ -pthread -Wl,--no-undefined  -shared -O -Wl,--version-script,"/opt/matlab/R2022b/extern/lib/glnxa64/c_exportsmexfileversion.map" /tmp/mex_15474392659988_1/PlexMethods.o /tmp/mex_15474392659988_1/cpp_mexapi_version.o   -lstdc++ -Wl,--as-needed -Wl,-rpath-link,/opt/matlab/R2022b/bin/glnxa64 -L"/opt/matlab/R2022b/bin/glnxa64" -Wl,-rpath-link,/opt/matlab/R2022b/extern/bin/glnxa64 -L"/opt/matlab/R2022b/extern/bin/glnxa64" -lMatlabDataArray -lmx -lmex -lm -lmat -o /home/matlab/Matlab-Offline-Files-SDK/mexPlex.mexa64
+MEX completed successfully.
