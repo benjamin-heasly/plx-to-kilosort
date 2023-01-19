@@ -13,7 +13,7 @@ RUN wget -q "https://plexon.com/wp-content/uploads/2017/08/OmniPlex-and-MAP-Offl
 
 # Get the build script that to compile the Plexon mexPlex mex-function.
 USER root
-COPY ./mex-build.sh /home/matlab/mex-build.sh
+COPY ./mex-build/mex-build.sh /home/matlab/mex-build.sh
 RUN chown matlab:matlab /home/matlab/mex-build.sh && chmod 755 /home/matlab/mex-build.sh
 
 # Build mexPlex.
@@ -21,8 +21,8 @@ USER matlab
 WORKDIR /home/matlab
 RUN /home/matlab/mex-build.sh
 
-# Configure Matlab on startup.
-COPY ./startup.m /home/matlab/Documents/MATLAB/startup.m
+# Get the Matlab code for converting .plx files to kilosort's format.
+COPY ./matlab /home/matlab/plx-to-kilosort
 
-# Add a test script we can use to check if mexPlex is working.
-COPY ./testMexPlex.m /home/matlab/testMexPlex.m
+# Configure Matlab on startup.
+COPY ./matlab/startup.m /home/matlab/Documents/MATLAB/startup.m

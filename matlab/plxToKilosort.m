@@ -1,0 +1,131 @@
+% A "main" entrypoint for converting .plx data to kilosort format.
+%
+% This combines a Plexon raw ".plx" file with several optional arguments,
+% and produces several files that can be used with Kilosort:
+%   - a raw int16 ".bin" file with neural waveform data
+%   - a "chanMap" file that describes the recording probe to Kilosort
+%   - an "ops" file that has many parameters expected by Kilosort
+%
+% Inputs:
+%
+% plxFile -- name of the .plx file to be sorted
+% outDir -- folder to receive output files: bin file, chanMap, and ops
+%           (default is same folder as plxFile)
+%
+% In addition to these positional arguments, several optional name-value
+% pairs are allowed.  When provided, these will be passed on to other
+% utilites (where they are documented).  These are:
+%
+% chanX -- see chanMapForPlxFile.m
+% chanY -- see chanMapForPlxFile.m
+% chanK -- see chanMapForPlxFile.m
+% chanIgnore -- see chanMapForPlxFile.m
+%
+% chanUnits -- see binFileForPlxFile.m
+% tRange -- see binFileForPlxFile.m
+% mVScale -- see binFileForPlxFile.m
+% samplesPerChunk -- see binFileForPlxFile.m
+%
+% tempDir -- see opsForPlxFile.m
+%
+% Outputs:
+%
+% chanMapFile -- path to the generated Kilosort chan map file
+% binFile -- path to the generated bin data file
+% opsFile -- path to the generated Kilosort ops file
+function [chanMapFile, binFile, opsFile] = plxToKilosort(plxFile, outDir, varargin)
+
+arguments
+    plxFile { mustBeFile }
+    outDir = fileparts(plxFile)
+end
+
+arguments (Repeating)
+    varargin
+end
+
+% There are potentially many options to pass into utilities below.
+% Organize them here, making them all named and optional.
+parser = inputParser();
+parser.CaseSensitive = true;
+parser.KeepUnmatched = false;
+parser.PartialMatching = false;
+parser.StructExpand = true;
+
+% chanMapForPlxFile
+parser.addParameter('chanX', []);
+parser.addParameter('chanY', []);
+parser.addParameter('chanK', []);
+parser.addParameter('chanIgnore', []);
+
+% binFileForPlxFile
+parser.addParameter('chanUnits', {}, @iscell);
+parser.addParameter('tRange', [0, inf], @isnumeric);
+parser.addParameter('mVScale', 1000, @isnumeric);
+parser.addParameter('samplesPerChunk', 400000, @isnumeric);
+
+% opsForPlxFile
+parser.addParameter('tempDir', tempdir(), @ischar);
+
+parser.parse(varargin{:});
+
+start = datetime('now', 'Format', 'uuuuMMdd''T''HHmmss');
+fprintf('plxToKilosort Start at: %s\n', char(start));
+
+fprintf('plxToKilosort Converting plx file: %s\n', plxFile);
+summarizePlxFile(plxFile, nan);
+
+if ~isfolder(outDir)
+    mkdir(outDir);
+end
+
+%% chanMapForPlxFile
+
+fprintf('plxToKilosort Generating chan map.\n');
+chanMap = chanMapForPlxFile( ...
+    plxFile, ...
+    parser.Results.chanX, ...
+    parser.Results.chanY, ...
+    parser.Results.chanK, ...
+    parser.Results.chanIgnore);
+
+fprintf('plxToKilosort Generated chan map:\n');
+disp(chanMap)
+
+chanMapFile = fullfile(outDir, 'chanMap.map');
+fprintf('plxToKilosort Writing chan map to %s.\n', chanMapFile);
+save(chanMapFile, 'chanMap');
+
+%% binFileForPlxFile
+
+fprintf('plxToKilosort Generating binary file.\n');
+binFile = binFileForPlxFile( ...
+    plxFile, ...
+    chanMap, ...
+    parser.Results.chanUnits, ...
+    parser.Results.tRange, ...
+    outDir, ...
+    parser.Results.mVScale, ...
+    parser.Results.samplesPerChunk);
+
+fprintf('plxToKilosort Generated binary file %s.\n', binFile);
+
+%% opsForPlxFile
+
+fprintf('plxToKilosort Generating Kilosort ops.\n');
+ops = opsForPlxFile( ...
+    plxFile, ...
+    chanMap, ...
+    binFile, ...
+    parser.Results.tempDir);
+
+fprintf('plxToKilosort Generated Kilosort ops:\n');
+disp(ops)
+
+opsFile = fullfile(outDir, 'ops.map');
+fprintf('plxToKilosort Writing Kilosort ops to %s.\n', opsFile);
+save(opsFile, 'ops');
+
+finish = datetime('now', 'Format', 'uuuuMMdd''T''HHmmss');
+duration = finish - start;
+fprintf('plxToKilosort Finish at: %s (%s elapsed)\n', char(finish), char(duration));

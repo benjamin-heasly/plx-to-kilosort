@@ -99,6 +99,10 @@ fprintf('binFileForPlxFile Start at %s\n', char(start));
 
 fprintf('binFileForPlxFile Converting .plx file: %s\n', plxFile);
 
+if ~isfolder(binDir)
+    mkdir(binDir);
+end
+
 [~, plxName, plxExt] = fileparts(plxFile);
 binFile = fullfile(binDir, [plxName plxExt '.bin']);
 fprintf('binFileForPlxFile Destination .bin file: %s\n', binFile);

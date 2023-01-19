@@ -1,4 +1,4 @@
-% Create a phy/spyming-circus .prb file for sorting Plexon data.
+% Create a phy/spyking-circus .prb file for sorting Plexon data.
 %
 % .prb is a Python script that has definitions like this:
 %
