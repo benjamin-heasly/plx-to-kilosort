@@ -25,4 +25,4 @@ RUN /home/matlab/mex-build.sh
 COPY ./matlab /home/matlab/plx-to-kilosort
 
 # Configure Matlab on startup.
-COPY ./matlab/startup.m /home/matlab/Documents/MATLAB/startup.m
+COPY ./matlab/container-startup.m /home/matlab/Documents/MATLAB/startup.m
