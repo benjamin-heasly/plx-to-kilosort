@@ -3,9 +3,9 @@
 % This combines Plexon file data with default kilosort ops taken from the
 % kilosort example code.
 %
-% See https://github.com/MouseLand/Kilosort/tree/main
-%    - Example ops: https://github.com/MouseLand/Kilosort/blob/main/configFiles/StandardConfig_MOVEME.m
-%    - Example ops: https://github.com/MouseLand/Kilosort/blob/main/configFiles/configFile384.m
+% See for examples:
+%  - https://github.com/MouseLand/Kilosort/blob/main/configFiles/StandardConfig_MOVEME.m
+%  - https://github.com/MouseLand/Kilosort/blob/main/configFiles/configFile384.m
 %
 % Inputs:
 %
@@ -18,19 +18,19 @@
 %
 % ops -- struct that should work as a kilosort options struct
 %
-function ops = opsForPlxFile(plxFile, chanMap, binFile, tempDir)
+function ops = defaultOpsForPlxFile(plxFile, chanMap, binFile, tempDir)
 
 arguments
     plxFile { mustBeFile }
     chanMap { mustBeNonempty }
     binFile { mustBeNonempty }
-    tempDir = tempdir();
+    tempDir = fileparts(binFile);
 end
 
 %% Start with many defaults from kilosort.
 % These are taken from kilosort examples:
-% - https://github.com/MouseLand/Kilosort/blob/main/configFiles/StandardConfig_MOVEME.m
-% - https://github.com/MouseLand/Kilosort/blob/main/configFiles/configFile384.m
+%  - https://github.com/MouseLand/Kilosort/blob/main/configFiles/StandardConfig_MOVEME.m
+%  - https://github.com/MouseLand/Kilosort/blob/main/configFiles/configFile384.m
 
 % frequency for high pass filtering (150)
 ops.fshigh = 150;
@@ -92,6 +92,7 @@ ops.NchanTOT = sum(chanMap.connected);
 % time range of interest, so kilosort should just sort the whole file.
 ops.trange = [0, inf];
 
+% Plexon spike waveform sample rate (not the AD "slow" rate).
 [header.file, ...
     header.version, ...
     header.frequency, ...
@@ -105,6 +106,4 @@ ops.trange = [0, inf];
     header.slowAdBits, ...
     header.duration, ...
     header.dateTime] = plx_information(plxFile);
-
-% Plexon spike waveform sample rate (not the AD "slow" rate).
 ops.fs = header.frequency;

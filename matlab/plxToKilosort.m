@@ -9,8 +9,8 @@
 % Inputs:
 %
 % plxFile -- name of the .plx file to be sorted
-% outDir -- folder to receive output files: bin file, chanMap, and ops
-%           (default is same folder as plxFile)
+% outDir -- folder to receive output files: bin file, chan map, and ops
+%           file (default is same folder as plxFile)
 %
 % In addition to these positional arguments, several optional name-value
 % pairs are allowed.  When provided, these will be passed on to other
@@ -26,7 +26,9 @@
 % mVScale -- see binFileForPlxFile.m
 % samplesPerChunk -- see binFileForPlxFile.m
 %
-% tempDir -- see opsForPlxFile.m
+% ops -- see defaultOpsForPlxFile.m for default Kilosort ops,
+%        see loadStruct.m for supported formats of custom ops to pass in
+%        here, which will merge with and take precedence over defaults.
 %
 % Outputs:
 %
@@ -64,8 +66,8 @@ parser.addParameter('tRange', [0, inf], @isnumeric);
 parser.addParameter('mVScale', 1000, @isnumeric);
 parser.addParameter('samplesPerChunk', 400000, @isnumeric);
 
-% opsForPlxFile
-parser.addParameter('tempDir', tempdir(), @ischar);
+% defaultOpsForPlxFile and loadStruct
+parser.addParameter('ops', struct());
 
 parser.parse(varargin{:});
 
@@ -92,7 +94,7 @@ chanMap = chanMapForPlxFile( ...
 fprintf('plxToKilosort Generated chan map:\n');
 disp(chanMap)
 
-chanMapFile = fullfile(outDir, 'chanMap.map');
+chanMapFile = fullfile(outDir, 'chanMap.mat');
 fprintf('plxToKilosort Writing chan map to %s.\n', chanMapFile);
 save(chanMapFile, 'chanMap');
 
@@ -110,21 +112,28 @@ binFile = binFileForPlxFile( ...
 
 fprintf('plxToKilosort Generated binary file %s.\n', binFile);
 
-%% opsForPlxFile
+%% defaultOpsForPlxFile and loadStruct
 
-fprintf('plxToKilosort Generating Kilosort ops.\n');
-ops = opsForPlxFile( ...
+fprintf('plxToKilosort Generating default Kilosort ops.\n');
+ops = defaultOpsForPlxFile( ...
     plxFile, ...
     chanMap, ...
-    binFile, ...
-    parser.Results.tempDir);
+    binFile);
 
-fprintf('plxToKilosort Generated Kilosort ops:\n');
+fprintf('plxToKilosort Merging default ops with any custom ops.\n');
+customOps = loadStruct(parser.Results.ops);
+customFields = fieldnames(customOps);
+for ii = 1:numel(customFields)
+    fieldName = customFields{ii};
+    ops.(fieldName) = customOps.(fieldName);
+end
+
+fprintf('plxToKilosort Here are the final Kilosort ops:\n');
 disp(ops)
 
-opsFile = fullfile(outDir, 'ops.map');
+opsFile = fullfile(outDir, 'ops.mat');
 fprintf('plxToKilosort Writing Kilosort ops to %s.\n', opsFile);
-save(opsFile, 'ops');
+save(opsFile, '-struct', 'ops');
 
 finish = datetime('now', 'Format', 'uuuuMMdd''T''HHmmss');
 duration = finish - start;
