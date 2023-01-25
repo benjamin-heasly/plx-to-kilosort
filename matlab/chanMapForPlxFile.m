@@ -51,7 +51,7 @@ chanMap.Nchannels = nChans;
 chanMap.chanMap = 1:nChans;
 
 chanMap.connected = false(nChans, 1);
-chanMap.connected(connectedChanInds) = true;
+chanMap.connected(connectedChanInds - 1) = true;
 chanMap.connected(chanIgnore) = false;
 
 if isempty(chanX)
