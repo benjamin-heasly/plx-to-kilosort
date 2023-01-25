@@ -65,11 +65,6 @@ ops.spkTh = -6;      % spike threshold in standard deviations (-6)
 ops.reorder = 1;       % whether to reorder batches for drift correction.
 ops.nskip = 25;  % how many batches to skip for determining spike PCs
 
-
-% nblocks is not in StandardConfig_MOVEME.m, but apparently it's required.
-% type of data shifting (0 = none, 1 = rigid, 2 = nonrigid)
-ops.nblocks = 5;
-
 ops.GPU = 1; % has to be 1, no CPU version yet, sorry
 % ops.Nfilt = 1024; % max number of clusters
 ops.nfilt_factor = 4; % max number of clusters per good channel (even temporary ones)
@@ -80,6 +75,15 @@ ops.nSkipCov = 25; % compute whitening matrix from every N-th batch
 ops.scaleproc = 200;   % int16 scaling of whitened data
 ops.nPCs = 3; % how many PCs to project the spikes into
 ops.useRAM = 0; % not yet available
+
+
+%% These are not in StandardConfig_MOVEME.m, but apparently required.
+
+% type of data shifting (0 = none, 1 = rigid, 2 = nonrigid)
+ops.nblocks = 5;
+
+% spatial scale for datashift kernel
+ops.sig = 20;
 
 
 %% Add what we know about the chosen .plx file.
