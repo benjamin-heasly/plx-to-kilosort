@@ -32,26 +32,30 @@ end
 %  - https://github.com/MouseLand/Kilosort/blob/main/configFiles/StandardConfig_MOVEME.m
 %  - https://github.com/MouseLand/Kilosort/blob/main/configFiles/configFile384.m
 
-% frequency for high pass filtering (150)
-ops.fshigh = 150;
+% These first 6 seem to be new or updated from Kilosort 2.5 to 3.
 
-% minimum firing rate on a "good" channel (0 to skip)
-ops.minfr_goodchannels = 0.1;
+% type of data shifting (0 = none, 1 = rigid, 2 = nonrigid)
+ops.nblocks = 5;
 
-% threshold on projections (like in Kilosort1, can be different for last pass like [10 4])
-ops.Th = [10 4];
-
-% how important is the amplitude penalty (like in Kilosort1, 0 means not used, 10 is average, 50 is a lot)
-ops.lam = 10;
+% spatial scale for datashift kernel
+ops.sig = 20;
 
 % splitting a cluster at the end requires at least this much isolation for each sub-cluster (max = 1)
-ops.AUCsplit = 0.9;
+ops.AUCsplit = 0.8;
+
+% frequency for high pass filtering (150)
+ops.fshigh = 300;
+
+% how important is the amplitude penalty (like in Kilosort1, 0 means not used, 10 is average, 50 is a lot)
+ops.lam = 20;
+
+% threshold on projections (like in Kilosort1, can be different for last pass like [10 4])
+ops.Th = [9 9];
+
+% The rest seem to have remained consistent from Kilosort 2.5 to 3.
 
 % minimum spike rate (Hz), if a cluster falls below this for too long it gets removed
 ops.minFR = 1/50;
-
-% number of samples to average over (annealed from first to second value)
-ops.momentum = [20 400];
 
 % spatial constant in um for computing residual variance of spike
 ops.sigmaMask = 30;
@@ -75,15 +79,6 @@ ops.nSkipCov = 25; % compute whitening matrix from every N-th batch
 ops.scaleproc = 200;   % int16 scaling of whitened data
 ops.nPCs = 3; % how many PCs to project the spikes into
 ops.useRAM = 0; % not yet available
-
-
-%% These are not in StandardConfig_MOVEME.m, but apparently required.
-
-% type of data shifting (0 = none, 1 = rigid, 2 = nonrigid)
-ops.nblocks = 5;
-
-% spatial scale for datashift kernel
-ops.sig = 20;
 
 
 %% Add what we know about the chosen .plx file.
