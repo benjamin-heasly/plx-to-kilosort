@@ -81,8 +81,8 @@ if ~isfolder(outDir)
     mkdir(outDir);
 end
 
-%% chanMapForPlxFile
 
+%% chanMapForPlxFile
 fprintf('plxToKilosort Generating chan map.\n');
 chanMap = chanMapForPlxFile( ...
     plxFile, ...
@@ -94,12 +94,13 @@ chanMap = chanMapForPlxFile( ...
 fprintf('plxToKilosort Generated chan map:\n');
 disp(chanMap)
 
-chanMapFile = fullfile(outDir, 'chanMap.mat');
+[~, plxBaseName] = fileparts(plxFile);
+chanMapFile = fullfile(outDir, sprintf('%s-chanMap.mat', plxBaseName));
 fprintf('plxToKilosort Writing chan map to %s.\n', chanMapFile);
 save(chanMapFile, 'chanMap');
 
-%% binFileForPlxFile
 
+%% binFileForPlxFile
 fprintf('plxToKilosort Generating binary file.\n');
 binFile = binFileForPlxFile( ...
     plxFile, ...
@@ -112,8 +113,8 @@ binFile = binFileForPlxFile( ...
 
 fprintf('plxToKilosort Generated binary file %s.\n', binFile);
 
-%% defaultOpsForPlxFile and loadStruct
 
+%% defaultOpsForPlxFile and loadStruct
 fprintf('plxToKilosort Generating default Kilosort ops.\n');
 ops = defaultOpsForPlxFile( ...
     plxFile, ...
@@ -131,7 +132,7 @@ end
 fprintf('plxToKilosort Here are the final Kilosort ops:\n');
 disp(ops)
 
-opsFile = fullfile(outDir, 'ops.mat');
+opsFile = fullfile(outDir, sprintf('%s-ops.mat', plxBaseName));
 fprintf('plxToKilosort Writing Kilosort ops to %s.\n', opsFile);
 save(opsFile, '-struct', 'ops');
 
