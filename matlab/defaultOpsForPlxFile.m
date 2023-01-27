@@ -32,10 +32,7 @@ end
 %  - https://github.com/MouseLand/Kilosort/blob/main/configFiles/StandardConfig_MOVEME.m
 %  - https://github.com/MouseLand/Kilosort/blob/main/configFiles/configFile384.m
 
-% These first 6 seem to be new or updated from Kilosort 2.5 to 3.
-
-% type of data shifting (0 = none, 1 = rigid, 2 = nonrigid)
-ops.nblocks = 5;
+% These first several seem to be new or updated from Kilosort 2.5 to 3.
 
 % spatial scale for datashift kernel
 ops.sig = 20;
@@ -91,6 +88,12 @@ ops.chanMap = chanMap;
 % Assume binFileForPlxFile() will only write out the "connected" channels.
 % Seems obvious here, but in general .bin files can contain extra channels.
 ops.NchanTOT = sum(chanMap.connected);
+
+% Kilosort3's "nblocks" is how many pieces to split probe into (along y)
+% when estimating non-rigid drift (0 = none, 1 = rigid, 2+ = nonrigid).
+% The default for Neuropixels is 5.  For Plexon we might expect fewer
+% probe sites, farther apart.  Maybe each site has its own drift.
+ops.nblocks = NchanTOT;
 
 % Assume binFileForPlxFile() will take care of selecting and converting the
 % time range of interest, so kilosort should just sort the whole file.
