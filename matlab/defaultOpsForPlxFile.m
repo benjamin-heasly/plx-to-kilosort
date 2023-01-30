@@ -93,7 +93,7 @@ ops.NchanTOT = sum(chanMap.connected);
 % when estimating non-rigid drift (0 = none, 1 = rigid, 2+ = nonrigid).
 % The default for Neuropixels is 5.  For Plexon we might expect fewer
 % probe sites, farther apart.  Maybe each site has its own drift.
-ops.nblocks = NchanTOT;
+ops.nblocks = ops.NchanTOT;
 
 % Assume binFileForPlxFile() will take care of selecting and converting the
 % time range of interest, so kilosort should just sort the whole file.
