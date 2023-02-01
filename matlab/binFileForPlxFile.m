@@ -73,12 +73,15 @@
 % samplesPerChunk -- number of samples (across all channels) to zip up and
 %                    write out at a time.  Default is 400000, and the exact
 %                    value should not matter much.
+% interpolate -- whether to fill in interpolated values between recorded
+%                waveforms.  If false, leaves gaps of zeros between
+%                waveforms.  Default is true -- do the interpolation.
 %
 % Outputs:
 %
 % binFile -- path to the converted .bin file with range of .plx spike data
 %
-function binFile = binFileForPlxFile(plxFile, chanMap, chanUnits, tRange, binDir, mVScale, samplesPerChunk)
+function binFile = binFileForPlxFile(plxFile, chanMap, chanUnits, tRange, binDir, mVScale, samplesPerChunk, interpolate)
 
 arguments
     plxFile { mustBeFile }
@@ -88,6 +91,7 @@ arguments
     binDir = pwd();
     mVScale = 1000;
     samplesPerChunk = 400000;
+    interpolate = true;
 end
 
 % Regarding mVScale: Here's an "official" example from Jennifer Colonnel
@@ -201,6 +205,13 @@ for cci = 1:connectedChanCount
             chanEnd = waveLastSamples(ww) - binFirstSample + 1;
             chanData(chanStart:chanEnd) = int16(mVScale * waveData(ww, :));
         end
+    end
+
+    if interpolate
+        fprintf('binFileForPlxFile interpolating gaps between waveforms for chanId %u.\n', chanId);
+        gapValue = int16(0);
+        defaultValue = int16(0);
+        chanData = interpolateGaps(chanData, gapValue, defaultValue);
     end
 
     % onCleanup handler fires after completion or error -- either way.

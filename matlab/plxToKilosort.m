@@ -25,6 +25,7 @@
 % tRange -- see binFileForPlxFile.m
 % mVScale -- see binFileForPlxFile.m
 % samplesPerChunk -- see binFileForPlxFile.m
+% interpolate -- see binFileForPlxFile.m
 %
 % ops -- see defaultOpsForPlxFile.m for default Kilosort ops,
 %        see loadStruct.m for supported formats of custom ops to pass in
@@ -65,6 +66,7 @@ parser.addParameter('chanUnits', {}, @iscell);
 parser.addParameter('tRange', [0, inf], @isnumeric);
 parser.addParameter('mVScale', 1000, @isnumeric);
 parser.addParameter('samplesPerChunk', 400000, @isnumeric);
+parser.addParameter('interpolate', true, @islogical);
 
 % defaultOpsForPlxFile and loadStruct
 parser.addParameter('ops', struct());
@@ -109,7 +111,8 @@ binFile = binFileForPlxFile( ...
     parser.Results.tRange, ...
     outDir, ...
     parser.Results.mVScale, ...
-    parser.Results.samplesPerChunk);
+    parser.Results.samplesPerChunk, ...
+    parser.Results.interpolate);
 
 fprintf('plxToKilosort Generated binary file %s.\n', binFile);
 
