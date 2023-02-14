@@ -36,7 +36,7 @@
 % chanMapFile -- path to the generated Kilosort chan map file
 % binFile -- path to the generated bin data file
 % opsFile -- path to the generated Kilosort ops file
-function [chanMapFile, binFile, opsFile] = plxToKilosort(plxFile, outDir, varargin)
+function [chanMapMatFile, binFile, opsMatFile] = plxToKilosort(plxFile, outDir, varargin)
 
 arguments
     plxFile { mustBeFile }
@@ -97,9 +97,14 @@ fprintf('plxToKilosort Generated chan map:\n');
 disp(chanMap)
 
 [~, plxBaseName] = fileparts(plxFile);
-chanMapFile = fullfile(outDir, sprintf('%s-chanMap.mat', plxBaseName));
-fprintf('plxToKilosort Writing chan map to %s.\n', chanMapFile);
-save(chanMapFile, 'chanMap');
+chanMapMatFile = fullfile(outDir, sprintf('%s-chanMap.mat', plxBaseName));
+fprintf('plxToKilosort Writing chan map to %s.\n', chanMapMatFile);
+save(chanMapMatFile, 'chanMap');
+
+chanMapJsonFile = fullfile(outDir, sprintf('%s-chanMap.json', plxBaseName));
+fprintf('plxToKilosort Writing chan map to %s.\n', chanMapJsonFile);
+chanMapJson = jsonencode(chanMap);
+writelines(chanMapJson, chanMapJsonFile);
 
 
 %% binFileForPlxFile
@@ -135,9 +140,14 @@ end
 fprintf('plxToKilosort Here are the final Kilosort ops:\n');
 disp(ops)
 
-opsFile = fullfile(outDir, sprintf('%s-ops.mat', plxBaseName));
-fprintf('plxToKilosort Writing Kilosort ops to %s.\n', opsFile);
-save(opsFile, '-struct', 'ops');
+opsMatFile = fullfile(outDir, sprintf('%s-ops.mat', plxBaseName));
+fprintf('plxToKilosort Writing Kilosort ops to %s.\n', opsMatFile);
+save(opsMatFile, '-struct', 'ops');
+
+opsJsonFile = fullfile(outDir, sprintf('%s-ops.json', plxBaseName));
+fprintf('plxToKilosort Writing Kilosort ops to %s.\n', opsJsonFile);
+opsJson = jsonencode(ops);
+writelines(opsJson, opsJsonFile);
 
 finish = datetime('now', 'Format', 'uuuuMMdd''T''HHmmss');
 duration = finish - start;
