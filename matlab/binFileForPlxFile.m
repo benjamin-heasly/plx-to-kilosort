@@ -170,17 +170,17 @@ fullread = 1;
 chanBinFiles = cell(connectedChanCount, 1);
 for cci = 1:connectedChanCount
     chanInd = connectedChanInds(cci);
-    chanId = chanInd - 1;
 
-    chanBinName = sprintf('%s%s.chan%u.bin', plxName, plxExt, chanId);
+    chanBinName = sprintf('%s%s.chan%u.bin', plxName, plxExt, chanInd);
     chanBinFile = fullfile(binDir, chanBinName);
     chanBinFiles{cci} = chanBinFile;
-    fprintf('binFileForPlxFile Create temp .bin file for chanId %u: %s\n', chanId, chanBinFile);
+    fprintf('binFileForPlxFile Create temp .bin file for chanInd %u: %s\n', chanInd, chanBinFile);
 
     % Pick which units to convert for this channel
     if numel(chanUnits) < chanInd || isempty(chanUnits{chanInd})
         % Default to all units that have data.
-        unitInds = find(counts.wfcounts(:,chanInd));
+        % silly off by one error in plexon sdk returned counts.
+        unitInds = find(counts.wfcounts(:, chanInd + 1));
     else
         % User-specified unit indices.
         unitInds = chanUnits{chanInd};
@@ -193,9 +193,9 @@ for cci = 1:connectedChanCount
     for unitInd = unitInds(:)'
         unitId = unitInd - 1;
 
-        fprintf('binFileForPlxFile Extracting waveforms for chanId %u, unitId %u\n', chanId, unitId);
+        fprintf('binFileForPlxFile Extracting waveforms for chanInd %u, unitId %u\n', chanInd, unitId);
 
-        [~, waveSampleCount, waveTimes, waveData] = plx_waves_v(plxFile, chanId, unitId);
+        [~, waveSampleCount, waveTimes, waveData] = plx_waves_v(plxFile, chanInd, unitId);
         waveThreshSamples = uint64(waveTimes * header.frequency);
         waveFirstSamples = uint64(waveThreshSamples - header.pointsPreThreshold);
         waveLastSamples = waveFirstSamples + uint64(waveSampleCount - 1);
@@ -208,11 +208,13 @@ for cci = 1:connectedChanCount
     end
 
     if interpolate
-        fprintf('binFileForPlxFile interpolating gaps between waveforms for chanId %u.\n', chanId);
+        fprintf('binFileForPlxFile interpolating gaps between waveforms for chanInd %u.\n', chanInd);
         gapValue = int16(0);
         defaultValue = int16(0);
         chanData = interpolateGaps(chanData, gapValue, defaultValue);
     end
+
+    fprintf('binFileForPlxFile Data range for chanInd %d: min %f max %f\n', chanInd, min(chanData), max(chanData));
 
     % onCleanup handler fires after completion or error -- either way.
     chanFid = fopen(chanBinFile, 'w');
