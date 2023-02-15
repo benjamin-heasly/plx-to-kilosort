@@ -76,12 +76,14 @@
 % interpolate -- whether to fill in interpolated values between recorded
 %                waveforms.  If false, leaves gaps of zeros between
 %                waveforms.  Default is true -- do the interpolation.
+% endPadding -- seconds of padding to add at the end of the binary file --
+%               default is 1 second.
 %
 % Outputs:
 %
 % binFile -- path to the converted .bin file with range of .plx spike data
 %
-function binFile = binFileForPlxFile(plxFile, chanMap, chanUnits, tRange, binDir, mVScale, samplesPerChunk, interpolate)
+function binFile = binFileForPlxFile(plxFile, chanMap, chanUnits, tRange, binDir, mVScale, samplesPerChunk, interpolate, endPadding)
 
 arguments
     plxFile { mustBeFile }
@@ -92,6 +94,7 @@ arguments
     mVScale = 1000;
     samplesPerChunk = 400000;
     interpolate = true;
+    endPadding = 1;
 end
 
 % Regarding mVScale: Here's an "official" example from Jennifer Colonnel
@@ -136,13 +139,17 @@ end
 fprintf('binFileForPlxFile Selecting waveforms in range %f - %f seconds (%s).\n', ...
     startTime, endTime, endTimeComment);
 
+paddingSamples = ceil(header.frequency * endPadding);
+fprintf('binFileForPlxFile Adding %f seconds (%d samples) to the end of the output binary.\n', ...
+    endPadding, paddingSamples);
+
 % Compute global sample numbers to represent in the new binary file.
 % These are ficticious sample numbers, as if Plexon had sampled the entire
 % spike waveform continuously at the high spike channel framerate.
 % We might take them all, or a subrange determined by tRange.
 binFirstSample = uint64(startTime * header.frequency) + 1;
 binLastSample = uint64(endTime * header.frequency);
-binSampleCount = binLastSample - binFirstSample + 1;
+binSampleCount = binLastSample - binFirstSample + 1 + paddingSamples;
 connectedChanInds = find(chanMap.connected);
 connectedChanCount = numel(connectedChanInds);
 fprintf('binFileForPlxFile Expecting %u samples across %u connected channels.\n', ...
