@@ -1,9 +1,64 @@
 # plx-to-kilosort
-A bit of Matlab code to convert Plexon `.plx` files into something we can pass into kilosort
+A bit of Matlab code to convert Plexon `.plx` files into formats we can pass to Kilosort and/or Phy.
 
-# Dependency
+You can run this code locally and/or in containers.
 
-This code depends on the Plexon [OmniPlex and MAP Offline SDK Bundle](https://plexon.com/wp-content/uploads/2017/08/OmniPlex-and-MAP-Offline-SDK-Bundle_0.zip).
+# Containers
+
+Two container images are produced from this repo and shared on Docker Hub:
+ - [ninjaben/plx-to-kilosort](https://hub.docker.com/repository/docker/ninjaben/plx-to-kilosort/general) converts a Plexon `.plx` file to a raw `.bin` file, plus Kilosort "ops" and "chanMap" files, in both '.mat' and '.json' format for convenience.  The results of this step can be passed on to Kilosort for sorting.
+ - [ninjaben/plx-to-phy](https://hub.docker.com/repository/docker/ninjaben/plx-to-phy/general) can take the `.plx`, `.bin`, and "ops" produced above and convert directly to "Phy" format.  This allows review and curation of spike sorting results that were performed manually with Plexon and saved in the `.plx` file.  This is intended to allow comparison of manual and automatic spike sorting using the same Phy tool.
+
+Here are some example Docker commands for running these in containers.
+
+## Conversion of `.plx` file to `.bin` and "ops"
+This step uses Matlab inside the container.
+
+```
+LICENSE_MAC_ADDRESS=$(cat /sys/class/net/en*/address)
+LICENSE_FILE="$(pwd)/license.lic"
+sudo docker run --rm \
+  --mac-address "$LICENSE_MAC_ADDRESS" \
+  --volume $LICENSE_FILE:/licenses/license.lic \
+  --env MLM_LICENSE_FILE=/licenses/license.lic \
+  --volume "/path/to/my/plexon/data:/plexon/data" \
+  ninjaben/plx-to-kilosort:v0.0.13 \
+  -batch "[chanMapFile, binFile, opsFile] = plxToKilosort('/plexon/data/recording.plx', '/plexon/data/out', 'tRange', [0, 30], 'ops', {'fproc', '/plexon/data/scratch/temp_wh2.dat'})"
+```
+
+## Conversion of `.plx`,`.bin`, and "ops" to Phy
+This step uses [spikeinterface](https://github.com/SpikeInterface/spikeinterface) and [Jupyter](https://jupyter-notebook.readthedocs.io/en/latest/).
+
+### batch mode
+
+```
+sudo docker run --rm \
+  --volume "/path/to/my/plexon/data:/plexon/data" \
+  --env PLX_FILE="/plexon/data/recording.plx" \
+  --env BIN_FILE="/plexon/data/out/recording.plx.bin" \
+  --env OPS_FILE="/plexon/data/out/recording-ops.json" \
+  --env OUT_DIR="/plexon/data/out/" \
+  ninjaben/plx-to-phy:v0.0.13  \
+  jupyter nbconvert --execute /home/jupyter/notebooks/plx_to_phy.ipynb --to html"
+```
+
+### interactive mode
+
+```
+sudo docker run --rm \
+  --volume "/path/to/my/plexon/data:/plexon/data" \
+  --network=host \
+  ninjaben/plx-to-phy:v0.0.13  \
+  "jupyter notebook"
+```
+
+Then visit [localhost:8888](http://localhost:8888).
+
+# Without Containers
+
+## Matlab setup
+
+The code in the `plx-to-kilosort/matlab` folder can be run locally in Matlab.  To run it locally you need to insteall a dependency -- the Plexon [OmniPlex and MAP Offline SDK Bundle](https://plexon.com/wp-content/uploads/2017/08/OmniPlex-and-MAP-Offline-SDK-Bundle_0.zip).
 This is available from the [Plexon Software Downloads](https://plexon.com/software-downloads/#software-downloads-SDKs) page (accessed December 2022).
 
 Once you have the OmniPlex and MAP Offline SDK Bundle:
@@ -14,9 +69,9 @@ Once you have the OmniPlex and MAP Offline SDK Bundle:
  - Add `OmniPlex and MAP Offline SDK Bundle` with subfolders to your Matlab path.
  - In Matlab, execute `build_and_verify_mexPlex` to compile the `mexPlex` function.
 
-Once that works, you should be ready to proceed.
+Once that works, add `plx-to-kilosort/matlab` to your Matlab path and you should be ready to proceed.
 
-# Summarize `.plx` File
+## Summarize `.plx` File in Matlab
 
 We can summarize the contents of a Plexon `.plx` file with `summarizePlxFile.m`.  This will return some `header` info and `counts` for data channels including spikes and timestamps, continuous AD "slow" channels, and digital events.
 
@@ -88,18 +143,50 @@ counts =
 
 We also get four plots, each showing a different channel type over the requested `startTime` and `duration`.  Some examples are below.
 
-## Spike channel Waveforms over time
+### Spike channel Waveforms over time
 
 ![Spike channel Waveforms over time](images/plexon-waveforms-30s.png)
 
-## Spike channel Waveforms aligned in the trigger window
+### Spike channel Waveforms aligned in the trigger window
 
 ![Spike channel Waveforms aligned in the trigger window](images/plexon-windows-30s.png)
 
-## Continuous AD AKA "slow" channels
+### Continuous AD AKA "slow" channels
 
 ![Continuous AD AKA "slow" channels](images/plexon-ad-30s.png)
 
-## Digital event channels
+### Digital event channels
 
 ![Digital event channels](images/plexon-event-30s.png)
+
+## Spikeinterface and Jupyter Setup
+
+The code in the `plx-to-phy/matlab` folder can be run locally in a Jupyter notebook.  A straightforward way to do all the setup is:
+
+ - [Install conda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html#) on your machine.
+ - Go to the command line, `cd` to the `plx-to-phy` folder of this repo, and run the following:
+
+```
+conda env create -f environment.yml
+conda activate si_env
+```
+
+From there you should be able to run the notebook in batch mode or interactively.
+
+### batch mode
+
+```
+PLX_FILE="/path/to/my/plexon/data/recording.plx" \
+BIN_FILE="/path/to/my/plexon/data/out/recording.plx.bin" \
+OPS_FILE="/path/to/my/plexon/data/recording-ops.json" \
+OUT_DIR="/path/to/my/plexon/data/out/" \
+jupyter nbconvert --execute plx_to_phy.ipynb --to html"
+```
+
+### interactive mode
+
+```
+jupyter notebook
+```
+
+Then visit [localhost:8888](http://localhost:8888).
