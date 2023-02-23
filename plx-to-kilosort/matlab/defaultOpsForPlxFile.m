@@ -12,18 +12,21 @@
 % plxFile -- name of the .plx file to be sorted
 % chanMap -- kilosort channel map struct, as from chanMapForPlxFile()
 % binFile -- name of the .bin file to sort, as from binFileForPlxFile()
+% tRange -- time range in seconds for Kilosort to process, default is the
+%           whole file, [0 inf]
 % tempDir -- dir for kilosort to use for working computation (eg fast ssd)
 %
 % Outputs:
 %
 % ops -- struct that should work as a kilosort options struct
 %
-function ops = defaultOpsForPlxFile(plxFile, chanMap, binFile, tempDir)
+function ops = defaultOpsForPlxFile(plxFile, chanMap, binFile, tRange, tempDir)
 
 arguments
     plxFile { mustBeFile }
     chanMap { mustBeNonempty }
     binFile { mustBeNonempty }
+    tRange = [0, inf]
     tempDir = fileparts(binFile);
 end
 
@@ -95,9 +98,8 @@ ops.NchanTOT = sum(chanMap.connected);
 % probe sites, farther apart.  Maybe each site has its own drift.
 ops.nblocks = ops.NchanTOT;
 
-% Assume binFileForPlxFile() will take care of selecting and converting the
-% time range of interest, so kilosort should just sort the whole file.
-ops.trange = [0, inf];
+% Time range in seconds for Kilosort to process.
+ops.trange = tRange;
 
 % Plexon spike waveform sample rate (not the AD "slow" rate).
 [header.file, ...

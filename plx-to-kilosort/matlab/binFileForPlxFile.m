@@ -82,8 +82,11 @@
 % Outputs:
 %
 % binFile -- path to the converted .bin file with range of .plx spike data
-%
-function binFile = binFileForPlxFile(plxFile, chanMap, chanUnits, tRange, binDir, mVScale, samplesPerChunk, interpolate, endPadding)
+% tRange -- time range in seconds that covers the entire converted
+%           timeline, ignoring endPadding.  Similar to given tRange
+%           argument, but always starts and 0 and ends at a finite end
+%           time, [0 endTime]
+function [binFile, binTRange] = binFileForPlxFile(plxFile, chanMap, chanUnits, tRange, binDir, mVScale, samplesPerChunk, interpolate, endPadding)
 
 arguments
     plxFile { mustBeFile }
@@ -131,13 +134,14 @@ fprintf('binFileForPlxFile Destination .bin file: %s\n', binFile);
 startTime = tRange(1);
 if isfinite(tRange(end))
     endTime = tRange(end);
-    endTimeComment = 'given end time';
+    endTimeComment = 'the given end time';
 else
     endTime = header.duration;
     endTimeComment = 'to end of file';
 end
 fprintf('binFileForPlxFile Selecting waveforms in range %f - %f seconds (%s).\n', ...
     startTime, endTime, endTimeComment);
+binTRange = [0, endTime - startTime];
 
 paddingSamples = ceil(header.frequency * endPadding);
 fprintf('binFileForPlxFile Adding %f seconds (%d samples) to the end of the output binary.\n', ...
