@@ -180,7 +180,7 @@ PLX_FILE="/path/to/my/plexon/data/recording.plx" \
 BIN_FILE="/path/to/my/plexon/data/out/recording.plx.bin" \
 OPS_FILE="/path/to/my/plexon/data/recording-ops.json" \
 OUT_DIR="/path/to/my/plexon/data/out/" \
-jupyter nbconvert --execute plx_to_phy.ipynb --to html"
+jupyter nbconvert --execute plx_to_phy.ipynb --to html
 ```
 
 ### interactive mode
