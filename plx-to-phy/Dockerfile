@@ -15,4 +15,4 @@ COPY --chown=jupyter:jupyter ./plx_to_phy.ipynb /home/jupyter/notebooks/
 
 # Send container commands through the "si_env" conda environment created above.
 # This is roughly equivalent to "conda activate si_env".
-ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "si_env", "/bin/bash", "-c"]
+ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "si_env"]
