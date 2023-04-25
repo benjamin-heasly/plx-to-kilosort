@@ -20,6 +20,7 @@
 % chanY -- see chanMapForPlxFile.m
 % chanK -- see chanMapForPlxFile.m
 % chanIgnore -- see chanMapForPlxFile.m
+% squeezeConnected -- see chanMapForPlxFile.m
 %
 % chanUnits -- see binFileForPlxFile.m
 % tRange -- see binFileForPlxFile.m
@@ -60,6 +61,7 @@ parser.addParameter('chanX', []);
 parser.addParameter('chanY', []);
 parser.addParameter('chanK', []);
 parser.addParameter('chanIgnore', []);
+parser.addParameter('squeezeConnected', true);
 
 % binFileForPlxFile
 parser.addParameter('chanUnits', {}, @iscell);
@@ -91,7 +93,8 @@ chanMap = chanMapForPlxFile( ...
     parser.Results.chanX, ...
     parser.Results.chanY, ...
     parser.Results.chanK, ...
-    parser.Results.chanIgnore);
+    parser.Results.chanIgnore, ...
+    parser.Results.squeezeConnected);
 
 fprintf('plxToKilosort Generated chan map:\n');
 disp(chanMap)

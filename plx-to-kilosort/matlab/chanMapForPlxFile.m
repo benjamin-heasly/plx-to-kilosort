@@ -12,12 +12,15 @@
 % chanY -- probe y-location of each channel, defaults to 1:Nchannels
 % chanK -- cluster that each channel belongs to, defaults to all ones
 % chanIgnore -- channel indexes (1-based) to treat as disconnected
+% squeezeConnected -- Whether to omit non-connected channels from the
+%                     returned chanMap.  Default is false -- include
+%                     channels as given.
 %
 % Outputs:
 %
 % chanMap -- struct that should work as a kilosort channel map
 %
-function chanMap = chanMapForPlxFile(plxFile, chanX, chanY, chanK, chanIgnore)
+function chanMap = chanMapForPlxFile(plxFile, chanX, chanY, chanK, chanIgnore, squeezeConnected)
 
 arguments
     plxFile { mustBeFile }
@@ -25,6 +28,7 @@ arguments
     chanY = [];
     chanK = [];
     chanIgnore = [];
+    squeezeConnected = false;
 end
 
 % Plexon data counts (from block headers, I think).
@@ -46,28 +50,7 @@ fullread = 1;
 nChans = size(counts.wfcounts, 2) - 1;
 [~, connectedChanInds] = find(counts.wfcounts);
 
-% This chanMap struct uses fieldnames expected by kilosort.
-chanMap.Nchannels = nChans;
-chanMap.chanMap = 1:nChans;
-
-chanMap.connected = false(nChans, 1);
-chanMap.connected(connectedChanInds - 1) = true;
-chanMap.connected(chanIgnore) = false;
-
-if isempty(chanX)
-    chanMap.xcoords = ones(nChans, 1);
-else
-    chanMap.xcoords = chanX;
-end
-
-if isempty(chanY)
-    chanMap.ycoords = (1:nChans)';
-else
-    chanMap.ycoords = chanY;
-end
-
-if isempty(chanK)
-    chanMap.kcoords = ones(nChans, 1);
-else
-    chanMap.kcoords = chanK;
-end
+connected = false(nChans, 1);
+connected(connectedChanInds - 1) = true;
+connected(chanIgnore) = false;
+chanMap = kilosortChanMap(nChans, chanX, chanY, chanK, connected, squeezeConnected);
