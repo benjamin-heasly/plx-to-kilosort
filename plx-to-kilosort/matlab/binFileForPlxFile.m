@@ -46,9 +46,8 @@
 % Inputs:
 %
 % plxFile -- name of the .plx file to be sorted
-% chanMap -- kilosort channel map struct, as from chanMapForPlxFile()
-%            chanMap.connected is a logical array indicating which channels
-%            to extract and convert.
+% connected -- logical array indicating which channels to extract and
+%              convert.
 % chanUnits -- cell array with list of units for each channel:
 %            - can be empty, to take all units from all channels
 %            - can be cell array of nChans elements, with
@@ -86,11 +85,11 @@
 %           timeline, ignoring endPadding.  Similar to given tRange
 %           argument, but always starts and 0 and ends at a finite end
 %           time, [0 endTime]
-function [binFile, binTRange] = binFileForPlxFile(plxFile, chanMap, chanUnits, tRange, binDir, mVScale, samplesPerChunk, interpolate, endPadding)
+function [binFile, binTRange] = binFileForPlxFile(plxFile, connected, chanUnits, tRange, binDir, mVScale, samplesPerChunk, interpolate, endPadding)
 
 arguments
     plxFile { mustBeFile }
-    chanMap { mustBeNonempty }
+    connected { mustBeNonempty }
     chanUnits = {};
     tRange = [0 inf];
     binDir = pwd();
@@ -154,7 +153,7 @@ fprintf('binFileForPlxFile Adding %f seconds (%d samples) to the end of the outp
 binFirstSample = uint64(startTime * header.frequency) + 1;
 binLastSample = uint64(endTime * header.frequency);
 binSampleCount = binLastSample - binFirstSample + 1 + paddingSamples;
-connectedChanInds = find(chanMap.connected);
+connectedChanInds = find(connected);
 connectedChanCount = numel(connectedChanInds);
 fprintf('binFileForPlxFile Expecting %u samples across %u connected channels.\n', ...
     binSampleCount, connectedChanCount);

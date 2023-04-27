@@ -19,8 +19,11 @@
 % Outputs:
 %
 % chanMap -- struct that should work as a kilosort channel map
+% connected -- logical array indicating which channels are treated as
+%              connected -- the ones that have spike waveforms and are not
+%              in chanIgnore.
 %
-function chanMap = chanMapForPlxFile(plxFile, chanX, chanY, chanK, chanIgnore, squeezeConnected)
+function [chanMap, connected] = chanMapForPlxFile(plxFile, chanX, chanY, chanK, chanIgnore, squeezeConnected)
 
 arguments
     plxFile { mustBeFile }
