@@ -11,7 +11,9 @@
 % chanX -- probe x-location of each channel, defaults to all ones
 % chanY -- probe y-location of each channel, defaults to 1:Nchannels
 % chanK -- cluster that each channel belongs to, defaults to all ones
-% chanIgnore -- channel indexes (1-based) to treat as disconnected
+% connected -- logical array indicating which channels to treat as
+%              connected -- defaults to the channels that have spike
+%              waveforms recorded in the .plx file
 % squeezeConnected -- Whether to omit non-connected channels from the
 %                     returned chanMap.  Default is false -- include
 %                     channels as given.
@@ -20,17 +22,15 @@
 %
 % chanMap -- struct that should work as a kilosort channel map
 % connected -- logical array indicating which channels are treated as
-%              connected -- the ones that have spike waveforms and are not
-%              in chanIgnore.
-%
-function [chanMap, connected] = chanMapForPlxFile(plxFile, chanX, chanY, chanK, chanIgnore, squeezeConnected)
+%              connected
+function [chanMap, connected] = chanMapForPlxFile(plxFile, chanX, chanY, chanK, connected, squeezeConnected)
 
 arguments
     plxFile { mustBeFile }
     chanX = [];
     chanY = [];
     chanK = [];
-    chanIgnore = [];
+    connected = [];
     squeezeConnected = false;
 end
 
@@ -53,7 +53,8 @@ fullread = 1;
 nChans = size(counts.wfcounts, 2) - 1;
 [~, connectedChanInds] = find(counts.wfcounts);
 
-connected = false(nChans, 1);
-connected(connectedChanInds - 1) = true;
-connected(chanIgnore) = false;
+if isempty(connected)
+    connected = false(nChans, 1);
+    connected(connectedChanInds - 1) = true;
+end
 chanMap = kilosortChanMap(nChans, chanX, chanY, chanK, connected, squeezeConnected);
