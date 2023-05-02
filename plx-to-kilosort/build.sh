@@ -27,7 +27,7 @@ sudo docker run --rm \
   -e MLM_LICENSE_FILE=/licenses/license.lic \
   -v "/home/ninjaben/Desktop/codin/gold-lab/plexon_data/MrM:/home/matlab/MrM" \
   ninjaben/plx-to-kilosort:local \
-  -batch "[chanMapFile, binFile, opsFile] = plxToKilosort('/home/matlab/MrM/Raw/MM_2022_11_28C_V-ProRec.plx', '/home/matlab/MrM/Kilosort', 'chanY', linspace(0, 2250, 16), 'tRange', [0, 30], 'ops', {'fproc', '/home/matlab/kilosortScratch/temp_wh2.dat'})"
+  -batch "[chanMapFile, binFile, opsFile] = plxToKilosort('/home/matlab/MrM/Raw/MM_2022_11_28C_V-ProRec.plx', '/home/matlab/MrM/Kilosort', 'chanY', linspace(0, 2250, 16), 'tEnd', 30, 'ops', {'fproc', '/home/matlab/kilosortScratch/temp_wh2.dat'})"
 
 sudo docker run --rm \
   --mac-address "$LICENSE_MAC_ADDRESS" \
@@ -35,4 +35,4 @@ sudo docker run --rm \
   -e MLM_LICENSE_FILE=/licenses/license.lic \
   -v "/home/ninjaben/Desktop/codin/gold-lab/plexon_data/MrM:/home/matlab/MrM" \
   ninjaben/plx-to-kilosort:local \
-  -batch "[chanMapFile, binFile, opsFile] = plxToKilosort('/home/matlab/MrM/Raw/MM_2022_08_05_REC.plx', '/home/matlab/MrM/Kilosort', 'chanY', linspace(0, 2250, 16), 'tRange', [0, 30], 'connected', true(6,1))"
+  -batch "[chanMapFile, binFile, opsFile] = plxToKilosort('/home/matlab/MrM/Raw/MM_2022_08_05_REC.plx', '/home/matlab/MrM/Kilosort', 'chanY', linspace(0, 2250, 16), 'tEnd', 30, 'connected', true(6,1))"

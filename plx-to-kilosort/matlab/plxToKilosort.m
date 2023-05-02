@@ -23,7 +23,8 @@
 % squeezeConnected -- see chanMapForPlxFile.m
 %
 % chanUnits -- see binFileForPlxFile.m
-% tRange -- see binFileForPlxFile.m
+% tStart -- see binFileForPlxFile.m
+% tEnd -- see binFileForPlxFile.m
 % mVScale -- see binFileForPlxFile.m
 % samplesPerChunk -- see binFileForPlxFile.m
 % interpolate -- see binFileForPlxFile.m
@@ -65,7 +66,8 @@ parser.addParameter('squeezeConnected', true);
 
 % binFileForPlxFile
 parser.addParameter('chanUnits', {}, @iscell);
-parser.addParameter('tRange', [0, inf], @isnumeric);
+parser.addParameter('tStart', 0, @isnumeric);
+parser.addParameter('tEnd', inf, @isnumeric);
 parser.addParameter('mVScale', 1000, @isnumeric);
 parser.addParameter('samplesPerChunk', 400000, @isnumeric);
 parser.addParameter('interpolate', true, @islogical);
@@ -119,7 +121,8 @@ fprintf('plxToKilosort Generating binary file.\n');
     plxFile, ...
     connected, ...
     parser.Results.chanUnits, ...
-    parser.Results.tRange, ...
+    parser.Results.tStart, ...
+    parser.Results.tEnd, ...
     outDir, ...
     parser.Results.mVScale, ...
     parser.Results.samplesPerChunk, ...

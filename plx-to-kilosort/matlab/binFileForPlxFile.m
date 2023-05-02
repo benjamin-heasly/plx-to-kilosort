@@ -2,8 +2,8 @@
 %
 % This writes a new .bin file of packed 16-bit samples, containing Plexon
 % triggered waveform segments from the given .plx file.  In between the
-% waveform segments will contain zero-valued samples that fill out the
-% time.
+% waveform segments will contain zero-valued or linearly interpolated
+% samples that fill out the time.
 %
 % This conversion is slightly awkward because of data ordering.
 %
@@ -18,30 +18,24 @@
 % need to minimize calls to the Plexon SDK, because this turns out to be
 % the slow step in conversion.
 %
-% It's slow, despite .plx files being designed for some kind of data access
-% pattern -- right?  Maybe the optimized access pattern is different from
-% what the SDK implements, for some reason.
-%
 % To minimize SDK calls, we extract each channel of data from the .plx file
 % once, and write it out to a temp file of packed, sequential 16-bit
 % samples.  Once we have the temp file for each channel, we're done with
-% the SDK.  We made as few calls as possible to get the data, and we only
-% loaded a channel at a time instead of the entire file.
+% the slow SDK.
 %
-% Note that each channel's temp file contains data from all units on the
-% same channel.  This is based on the assumption that units in the same
+% Finally, we read the channel temp files in chunks and zip them together
+% into one big bin file.  This is pretty quick because we can fseek through
+% the packed samples to locate each chunk.  Working in chunks of fixed size
+% avoids reading the entire data set back into memory.  The resulting
+% output file has packed 16-bit samples arranged sequentially in time, with
+% each channel represented at each time point, as kilosort expects.
+%
+% Note that each converted channel contains data from all Plexon units on
+% the same channel.  This is based on the assumption that units in the same
 % channel will never clobber each other -- either the units are disjoint
 % subsets of the channel data, or they are exactly redundant.  Either way,
 % units should not contain arbitrary, independent waveforms that would
 % interfere with each other.
-%
-% Finally, we read the channel temp files in chunks and zip
-% them together into one big bin file.  This is pretty quick because we can
-% fseek through the packed samples to locate each chunk.  Working in chunks
-% of fixed size avoids reading the entire data set back into memory.  The
-% resulting output file has packed 16-bit samples arranged sequentially in
-% time, with each channel represented at each time point, as kilosort
-% expects.
 %
 % Inputs:
 %
@@ -61,8 +55,10 @@
 %                take all units from any remaining channels (empty by default)
 %              These are all 1-based Matlab indices for units and channels,
 %              not 0-based Plexon ids for units and channels.
-% tRange -- time range [startTime, endTime] to extract from plxFile and
-%           convert to .bin, default is the entire .plx timeline [0 inf]
+% tStart -- beginning of time range in seconds to convert, default is 0 to
+%           convert all spike waveforms in plxFile.
+% tEnd -- end of time range in seconds to convert, default is inf to
+%         convert all spike waveforms in plxFile.
 % binDir -- directory where the new .bin file should be written, default is
 %           pwd().
 % mVScale -- Scale factor for representing Plexon millivolt samples as
@@ -82,16 +78,17 @@
 %
 % binFile -- path to the converted .bin file with range of .plx spike data
 % tRange -- time range in seconds that covers the entire converted
-%           timeline, ignoring endPadding.  Similar to given tRange
-%           argument, but always starts and 0 and ends at a finite end
-%           time, [0 endTime]
-function [binFile, binTRange] = binFileForPlxFile(plxFile, connected, chanUnits, tRange, binDir, mVScale, samplesPerChunk, interpolate, endPadding)
+%           timeline, ignoring endPadding.  Similar to given tStart and
+%           tEnd arguments, but always starts and 0 and always ends at a
+%           finite end time, [0, end time]
+function [binFile, binTRange] = binFileForPlxFile(plxFile, connected, chanUnits, tStart, tEnd, binDir, mVScale, samplesPerChunk, interpolate, endPadding)
 
 arguments
     plxFile { mustBeFile }
     connected { mustBeNonempty }
     chanUnits = {};
-    tRange = [0 inf];
+    tStart = 0;
+    tEnd = inf;
     binDir = pwd();
     mVScale = 1000;
     samplesPerChunk = 400000;
@@ -130,17 +127,15 @@ fprintf('binFileForPlxFile Destination .bin file: %s\n', binFile);
     header.duration, ...
     header.dateTime] = plx_information(plxFile);
 
-startTime = tRange(1);
-if isfinite(tRange(end))
-    endTime = tRange(end);
-    endTimeComment = 'the given end time';
+if isfinite(tEnd)
+    endTimeComment = 'to given tEnd';
 else
-    endTime = header.duration;
+    tEnd = header.duration;
     endTimeComment = 'to end of file';
 end
 fprintf('binFileForPlxFile Selecting waveforms in range %f - %f seconds (%s).\n', ...
-    startTime, endTime, endTimeComment);
-binTRange = [0, endTime - startTime];
+    tStart, tEnd, endTimeComment);
+binTRange = [0, tEnd - tStart];
 
 paddingSamples = ceil(header.frequency * endPadding);
 fprintf('binFileForPlxFile Adding %f seconds (%d samples) to the end of the output binary.\n', ...
@@ -149,9 +144,9 @@ fprintf('binFileForPlxFile Adding %f seconds (%d samples) to the end of the outp
 % Compute global sample numbers to represent in the new binary file.
 % These are ficticious sample numbers, as if Plexon had sampled the entire
 % spike waveform continuously at the high spike channel framerate.
-% We might take them all, or a subrange determined by tRange.
-binFirstSample = uint64(startTime * header.frequency) + 1;
-binLastSample = uint64(endTime * header.frequency);
+% We might take them all, or a subrange determined by tStart and tEnd.
+binFirstSample = uint64(tStart * header.frequency) + 1;
+binLastSample = uint64(tEnd * header.frequency);
 binSampleCount = binLastSample - binFirstSample + 1 + paddingSamples;
 connectedChanInds = find(connected);
 connectedChanCount = numel(connectedChanInds);
@@ -196,8 +191,8 @@ for cci = 1:connectedChanCount
         unitInds = chanUnits{chanInd};
     end
 
-    % Load each unit into memory and select its waveforms in tRange.
-    % This stores up to the whole channel in memory, depending on tRange.
+    % Load each unit into memory and select its waveforms in [tStart, tEnd].
+    % This stores up to the whole channel in memory, depending on [tStart, tEnd].
     % This read seems to be the slowest part of the conversion.
     chanData = zeros([binSampleCount, 1], 'int16');
     for unitInd = unitInds(:)'
