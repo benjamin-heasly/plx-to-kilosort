@@ -95,8 +95,9 @@ ops.NchanTOT = sum(chanMap.connected);
 % Kilosort3's "nblocks" is how many pieces to split probe into (along y)
 % when estimating non-rigid drift (0 = none, 1 = rigid, 2+ = nonrigid).
 % The default for Neuropixels is 5.  For Plexon we might expect fewer
-% probe sites, farther apart.  Maybe each site has its own drift.
-ops.nblocks = ops.NchanTOT;
+% probe sites, farther apart.  Maybe each site has its own drift?
+% Let's default to turning this off for now.
+ops.nblocks = 0;
 
 % Time range in seconds for Kilosort to process.
 ops.trange = tRange;
